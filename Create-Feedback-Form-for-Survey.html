@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab: Create Feedback Form for Survey</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --surface-alt: #eef0f5;
+      --border: #d4d6de;
+      --text-primary: #161616;
+      --text-secondary: #525252;
+      --text-muted: #8d8d8d;
+      --accent: #d6246e;
+      --accent-light: #fde8f1;
+      --accent-dark: #a8185a;
+      --blue: #0062ff;
+      --blue-light: #d0e2ff;
+      --green: #198038;
+      --green-bg: #defbe6;
+      --yellow: #b28600;
+      --yellow-bg: #fdf1c2;
+      --code-bg: #f0f2f5;
+      --code-border: #c6c8d0;
+      --sidebar-width: 260px;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'IBM Plex Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text-primary);
+      font-size: 15px;
+      line-height: 1.7;
+      display: flex;
+    }
+
+    /* ── Sidebar ── */
+    nav {
+      width: var(--sidebar-width);
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .nav-header {
+      padding: 20px 18px 14px;
+      border-bottom: 3px solid var(--accent);
+    }
+
+    .nav-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 2px 8px;
+      border-radius: 2px;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .nav-header h2 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .nav-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    nav ul { list-style: none; padding: 10px 0; }
+    nav ul li a {
+      display: block;
+      padding: 7px 18px;
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      transition: all .15s;
+    }
+    nav ul li a:hover {
+      color: var(--accent);
+      background: var(--accent-light);
+      border-left-color: var(--accent);
+    }
+    nav ul li.active a {
+      color: var(--accent);
+      border-left-color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ── Main ── */
+    main {
+      flex: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 52px 80px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 4px solid var(--accent);
+      padding: 36px 40px;
+      margin-bottom: 40px;
+      border-radius: 2px;
+    }
+
+    .hero h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.25;
+      margin-bottom: 10px;
+    }
+
+    .time-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--yellow-bg);
+      color: var(--yellow);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 2px;
+      margin-bottom: 20px;
+    }
+
+    .hero p { color: var(--text-secondary); font-size: 14.5px; max-width: 680px; }
+
+    /* ── Sections ── */
+    section { margin-bottom: 48px; }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-badge {
+      width: 28px; height: 28px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 2px;
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: var(--mono);
+    }
+
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 22px 0 10px;
+    }
+
+    p { margin-bottom: 14px; color: var(--text-secondary); }
+
+    /* ── Obj / Prereq lists ── */
+    .obj-list {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 20px 24px;
+      border-radius: 2px;
+      margin-bottom: 16px;
+    }
+
+    .obj-list ul { list-style: none; }
+    .obj-list ul li {
+      padding: 6px 0 6px 22px;
+      position: relative;
+      font-size: 14px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+    .obj-list ul li:last-child { border-bottom: none; }
+    .obj-list ul li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 14px;
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    /* ── Numbered steps ── */
+    .steps { }
+    .step {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+      align-items: flex-start;
+    }
+    .step-num {
+      width: 28px; height: 28px;
+      background: var(--text-primary);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-body { flex: 1; }
+    .step-body p { margin-bottom: 10px; }
+
+    /* ── Code blocks ── */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 4px;
+      margin: 12px 0 16px;
+      overflow: hidden;
+    }
+
+    .code-label {
+      background: var(--text-primary);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .copy-btn {
+      background: none;
+      border: 1px solid #555;
+      color: #ccc;
+      font-size: 10px;
+      padding: 2px 8px;
+      cursor: pointer;
+      border-radius: 2px;
+      font-family: var(--mono);
+      transition: all .15s;
+    }
+    .copy-btn:hover { background: #444; color: #fff; }
+
+    pre {
+      margin: 0;
+      padding: 18px 20px;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text-primary);
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 13px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: #1a1a6e;
+    }
+
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: inherit;
+      color: inherit;
+    }
+
+    /* Syntax tinting */
+    .kw  { color: #0043ce; font-weight: 600; }
+    .str { color: #8a3800; }
+    .fn  { color: #007d79; }
+    .cm  { color: #737373; font-style: italic; }
+    .tag { color: #a12771; }
+    .attr{ color: #005d5d; }
+
+    /* ── Callouts ── */
+    .callout {
+      display: flex;
+      gap: 14px;
+      padding: 14px 18px;
+      border-radius: 4px;
+      margin: 14px 0;
+      font-size: 13.5px;
+    }
+    .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+    .callout-note { background: var(--blue-light); border-left: 3px solid var(--blue); }
+    .callout-note .callout-icon::before { content: 'ℹ'; color: var(--blue); }
+    .callout-tip  { background: var(--green-bg); border-left: 3px solid var(--green); }
+    .callout-tip .callout-icon::before { content: '✓'; color: var(--green); }
+    .callout p { margin: 0; color: var(--text-primary); }
+
+    /* ── API term definitions ── */
+    .api-terms { margin: 12px 0 16px; }
+    .api-terms dt {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: #1a1a6e;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      margin-bottom: 4px;
+      margin-top: 12px;
+    }
+    .api-terms dd {
+      padding-left: 16px;
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    /* ── Details/Summary ── */
+    details {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin: 16px 0;
+    }
+
+    summary {
+      padding: 14px 18px;
+      cursor: pointer;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--accent);
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    summary::before {
+      content: '▶';
+      font-size: 10px;
+      transition: transform .2s;
+    }
+    details[open] summary::before { transform: rotate(90deg); }
+    summary:hover { background: var(--accent-light); }
+    details .code-block {
+      margin: 0;
+      border-radius: 0 0 4px 4px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Conclusion ── */
+    .conclusion {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--green);
+      padding: 28px 32px;
+      border-radius: 2px;
+    }
+    .conclusion h2 { border-bottom-color: transparent; padding-bottom: 0; margin-bottom: 16px; }
+    .conclusion ul { list-style: none; }
+    .conclusion ul li {
+      padding: 8px 0 8px 24px;
+      position: relative;
+      font-size: 14px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+    .conclusion ul li:last-child { border-bottom: none; }
+    .conclusion ul li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    /* ── Congrats banner ── */
+    .congrats {
+      background: var(--accent-light);
+      border: 1px solid var(--accent);
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin: 24px 0;
+      font-weight: 600;
+      color: var(--accent-dark);
+      font-size: 15px;
+      text-align: center;
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .license-tag {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      padding: 3px 10px;
+      border-radius: 2px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 900px) {
+      nav { display: none; }
+      main { padding: 28px 24px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<nav>
+  <div class="nav-header">
+    <div class="nav-badge">IBM Skills Network</div>
+    <h2>Create Feedback Form for Survey</h2>
+    <div class="nav-meta">⏱ 40 min &nbsp;·&nbsp; React</div>
+  </div>
+  <ul>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#prerequisites">Prerequisites</a></li>
+    <li><a href="#step1">Step 1: Environment Setup</a></li>
+    <li><a href="#step3">Step 3: Basic Template</a></li>
+    <li><a href="#step4">Step 4: Initialize State</a></li>
+    <li><a href="#step5">Step 5: Change Handlers</a></li>
+    <li><a href="#step6">Step 6: Bind State to Form</a></li>
+    <li><a href="#step7">Step 7: Form Submission</a></li>
+    <li><a href="#step8">Step 8: onSubmit Handler</a></li>
+    <li><a href="#step9">Step 9: Check Output</a></li>
+    <li><a href="#practice">Practice Exercise</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+
+<!-- ── Main ── -->
+<main>
+
+  <!-- Hero -->
+  <div class="hero" id="overview">
+    <div class="time-badge">⏱ Estimated time: 40 minutes</div>
+    <h1>Lab: Create Feedback Form for Survey</h1>
+    <p>Create a feedback form using React functional components and manage user details using the <code>useState</code> hook. Implement event handlers, validate inputs, handle form submissions, and display a confirmation dialog using the <code>confirm</code> method before final submission.</p>
+  </div>
+
+  <!-- Objectives -->
+  <section>
+    <h2>Learning objectives</h2>
+    <div class="obj-list">
+      <ul>
+        <li>Create a form to collect user feedback, including their name, email, and the feedback message</li>
+        <li>Handle form submission with data validation to ensure users enter their name and provide feedback</li>
+        <li>Display a confirmation dialog showing the entered information before final submission</li>
+        <li>Reset the form fields to provide a clean form for submitting additional feedback</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Prerequisites -->
+  <section id="prerequisites">
+    <h2>Prerequisites</h2>
+    <div class="obj-list">
+      <ul>
+        <li>Basic knowledge of HTML</li>
+        <li>Intermediate knowledge of JavaScript</li>
+        <li>Basic knowledge of React function component, <code>useState</code> hook, and handling forms</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Step 1 -->
+  <section id="step1">
+    <h2><span class="step-badge">1</span> Setting up the Environment</h2>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <p>From the menu on top of the lab, click the <strong>Terminal</strong> tab at the top-right, then click <strong>New Terminal</strong>.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <p>Clone the boiler template:</p>
+          <div class="code-block">
+            <div class="code-label">terminal <button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><code>git clone https://github.com/ibm-developer-skills-network/feedback_form.git</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <p>This creates a <strong>feedback_form</strong> folder containing <code>FeedbackForm.jsx</code> and <code>FeedbackForm.css</code>:</p>
+          <div class="code-block">
+            <div class="code-label">folder structure</div>
+            <pre><code>feedback_form/
+└── src/
+    ├── Components/
+    │   ├── FeedbackForm.css
+    │   └── FeedbackForm.jsx
+    ├── App.jsx
+    ├── main.jsx
+    └── index.html</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <p>Navigate into the folder:</p>
+          <div class="code-block">
+            <div class="code-label">terminal <button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><code>cd feedback_form</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <p>Install packages and run the app:</p>
+          <div class="code-block">
+            <div class="code-label">terminal <button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><code>npm install</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-label">terminal <button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><code>npm run preview</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <p>Click the <strong>Skills Network</strong> icon → <strong>Launch Application</strong> → enter port <strong>4173</strong> → click the launch button.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">7</div>
+        <div class="step-body">
+          <p>Initial output shows: a pink banner "Tell Us What You Think" and a card with "We'd Love to Hear From You!"</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">8</div>
+        <div class="step-body">
+          <p><em>(Optional)</em> Preserve your work by committing and pushing to your GitHub repository.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step 3 -->
+  <section id="step3">
+    <h2><span class="step-badge">3</span> Create Basic Template</h2>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <p>Open <code>FeedbackForm.jsx</code> in <code>src/Components/</code>. The starter file has a <code>&lt;nav&gt;</code> tag and a <code>&lt;form className="feedback-form"&gt;</code> with an <code>&lt;h2&gt;</code> and <code>&lt;p&gt;</code> already in place.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <p>Add three input fields and a submit button inside the form — one for name, one for email, one textarea for feedback:</p>
+          <div class="code-block">
+            <div class="code-label">jsx <button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><code>&lt;<span class="tag">input</span>
+  <span class="attr">type</span>=<span class="str">"text"</span>
+  <span class="attr">name</span>=<span class="str">"name"</span>
+  <span class="attr">placeholder</span>=<span class="str">"Your Name"</span>
+/&gt;
+&lt;<span class="tag">input</span>
+  <span class="attr">type</span>=<span class="str">"email"</span>
+  <span class="attr">name</span>=<span class="str">"email"</span>
+  <span class="attr">placeholder</span>=<span class="str">"Your Email"</span>
+/&gt;
+&lt;<span class="tag">textarea</span>
+  <span class="attr">name</span>=<span class="str">"feedback"</span>
+  <span class="attr">placeholder</span>=<span class="str">"Your Feedback"</span>
+&gt;&lt;/<span class="tag">textarea</span>&gt;
+&lt;<span class="tag">button</span> <span class="attr">type</span>=<span class="str">"submit"</span>&gt;Submit Feedback&lt;/<span class="tag">button</span>&gt;</code></pre>
+          </div>
+          <div class="callout callout-note">
+            <div class="callout-icon"></div>
+            <p>If the application is already running, just refresh the browser page to see the latest changes.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step 4 -->
+  <section id="step4">
+    <h2><span class="step-badge">4</span> Initialize States to Handle Form Data</h2>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <p>Import <code>useState</code> at the top of the component:</p>
+          <div class="code-block">
+            <div class="code-label">jsx <button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><code><span class="kw">import</span> React, { useState } <span class="kw">from</span> <span class="str">'react'</span>;</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <p>Add the <code>formData</code> state variable <strong>before</strong> the <code>return</code> of the component, initialized with empty strings:</p>
+          <div class="code-block">
+            <div class="code-label">jsx <button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><code><span class="kw">const</span> [formData, setFormData] = <span class="fn">useState</span>({
+  name: <span class="str">''</span>,
+  email: <span class="str">''</span>,
+  feedback: <span class="str">''</span>
+});</code></pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step 5 -->
+  <section id="step5">
+    <h2><span class="step-badge">5</span> Implement Change Handlers</h2>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <p>Define a <code>handleChange</code> function after the <code>useState</code> initialization:</p>
+          <div class="code-block">
+            <div class="code-label">jsx <button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><code><span class="kw">const</span> <span class="fn">handleChange</span> = (event) => {
+  <span class="kw">const</span> { name, value } = event.target;
+  <span class="fn">setFormData</span>({
+    ...formData,
+    [name]: value
+  });
+};</code></pre>
+          </div>
+
+          <dl class="api-terms">
+            <dt>const handleChange = (event) =&gt; &#123; ... &#125;</dt>
+            <dd>Arrow function that receives the event triggered by user interaction with an input element.</dd>
+            <dt>const &#123; name, value &#125; = event.target</dt>
+            <dd>Extracts the <code>name</code> attribute and current <code>value</code> from the input field that triggered the event.</dd>
+            <dt>setFormData(&#123; ...formData, [name]: value &#125;)</dt>
+            <dd>Updates state immutably — spreads existing <code>formData</code> and overwrites only the changed field. A new object is created rather than modifying state directly.</dd>
+          </dl>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step 6 -->
+  <section id="step6">
+    <h2><span class="step-badge">6</span> Integrate Form State and onChange Event</h2>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <p>Add <code>value</code> and <code>onChange</code> attributes to the existing input fields and textarea:</p>
+          <div class="code-block">
+            <div class="code-label">jsx <button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><code>&lt;<span class="tag">input</span>
+  <span class="attr">type</span>=<span class="str">"text"</span>
+  <span class="attr">name</span>=<span class="str">"name"</span>
+  <span class="attr">placeholder</span>=<span class="str">"Your Name"</span>
+  <span class="attr">value</span>={formData.name}
+  <span class="attr">onChange</span>={handleChange}
+/&gt;
+&lt;<span class="tag">input</span>
+  <span class="attr">type</span>=<span class="str">"email"</span>
+  <span class="attr">name</span>=<span class="str">"email"</span>
+  <span class="attr">placeholder</span>=<span class="str">"Your Email"</span>
+  <span class="attr">value</span>={formData.email}
+  <span class="attr">onChange</span>={handleChange}
+/&gt;
+&lt;<span class="tag">textarea</span>
+  <span class="attr">name</span>=<span class="str">"feedback"</span>
+  <span class="attr">placeholder</span>=<span class="str">"Your Feedback"</span>
+  <span class="attr">value</span>={formData.feedback}
+  <span class="attr">onChange</span>={handleChange}
+&gt;&lt;/<span class="tag">textarea</span>&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step 7 -->
+  <section id="step7">
+    <h2><span class="step-badge">7</span> Handle Form Submission</h2>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <p>Add the <code>handleSubmit</code> function just <strong>before</strong> the <code>return</code> of the <code>FeedbackForm</code> component:</p>
+          <div class="code-block">
+            <div class="code-label">jsx <button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><code><span class="kw">const</span> <span class="fn">handleSubmit</span> = (event) => {
+  event.<span class="fn">preventDefault</span>();
+
+  <span class="kw">const</span> confirmationMessage = <span class="str">`
+  Name: ${formData.name}
+  Email: ${formData.email}
+  Feedback: ${formData.feedback}
+  `</span>;
+
+  <span class="kw">const</span> isConfirmed = window.<span class="fn">confirm</span>(
+    <span class="str">`Please confirm your details:\n\n${confirmationMessage}`</span>
+  );
+
+  <span class="kw">if</span> (isConfirmed) {
+    console.<span class="fn">log</span>(<span class="str">'Submitting feedback:'</span>, formData);
+    <span class="fn">setFormData</span>({
+      name: <span class="str">''</span>,
+      email: <span class="str">''</span>,
+      feedback: <span class="str">''</span>
+    });
+    <span class="fn">alert</span>(<span class="str">'Thank you for your valuable feedback!'</span>);
+  }
+};</code></pre>
+          </div>
+
+          <dl class="api-terms">
+            <dt>event.preventDefault()</dt>
+            <dd>Prevents the default browser form submission behavior (page reload).</dd>
+            <dt>confirmationMessage</dt>
+            <dd>A template literal that constructs a readable summary of the user's inputs.</dd>
+            <dt>window.confirm(...)</dt>
+            <dd>Displays a browser dialog. Returns <code>true</code> if user clicks <strong>OK</strong>, <code>false</code> if they click <strong>Cancel</strong>.</dd>
+            <dt>setFormData(&#123; ... &#125;)</dt>
+            <dd>Resets all form fields to empty strings after a successful submission.</dd>
+            <dt>alert(...)</dt>
+            <dd>Displays a thank you message to the user after form reset.</dd>
+          </dl>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Step 8 -->
+  <section id="step8">
+    <h2><span class="step-badge">8</span> Implement onSubmit Event Handler</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <p>Add the <code>onSubmit</code> event handler to the <code>&lt;form&gt;</code> tag:</p>
+          <div class="code-block">
+            <div class="code-label">jsx <button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><code>&lt;<span class="tag">form</span> <span class="attr">onSubmit</span>={handleSubmit} <span class="attr">className</span>=<span class="str">"feedback-form"</span>&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step 9 -->
+  <section id="step9">
+    <h2><span class="step-badge">9</span> Check the Output</h2>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <p>Stop the app (<code>Ctrl+C</code>), re-run with <code>npm run preview</code>, then fill in the form and click <strong>Submit Feedback</strong>. A confirm dialog appears showing all entered details.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <p>Click <strong>OK</strong> → a thank you alert displays and the form clears.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <p>Click <strong>Cancel</strong> → the confirm dialog closes and the form retains the entered data.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="congrats">🎉 Congratulations! You have created a feedback form application!</div>
+
+    <details>
+      <summary>Full solution — FeedbackForm.jsx</summary>
+      <div class="code-block">
+        <pre><code><span class="kw">import</span> React, { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> <span class="str">'./FeedbackForm.css'</span>;
+
+<span class="kw">const</span> <span class="fn">FeedbackForm</span> = () => {
+  <span class="kw">const</span> [formData, setFormData] = <span class="fn">useState</span>({
+    name: <span class="str">''</span>,
+    email: <span class="str">''</span>,
+    feedback: <span class="str">''</span>
+  });
+
+  <span class="kw">const</span> <span class="fn">handleChange</span> = (event) => {
+    <span class="kw">const</span> { name, value } = event.target;
+    <span class="fn">setFormData</span>({ ...formData, [name]: value });
+  };
+
+  <span class="kw">const</span> <span class="fn">handleSubmit</span> = (event) => {
+    event.<span class="fn">preventDefault</span>();
+    <span class="kw">const</span> confirmationMessage = <span class="str">`
+    Name: ${formData.name}
+    Email: ${formData.email}
+    Feedback: ${formData.feedback}
+    `</span>;
+    <span class="kw">const</span> isConfirmed = window.<span class="fn">confirm</span>(
+      <span class="str">`Please confirm your details:\n\n${confirmationMessage}`</span>
+    );
+    <span class="kw">if</span> (isConfirmed) {
+      console.<span class="fn">log</span>(<span class="str">'Submitting feedback:'</span>, formData);
+      <span class="fn">setFormData</span>({ name: <span class="str">''</span>, email: <span class="str">''</span>, feedback: <span class="str">''</span> });
+      <span class="fn">alert</span>(<span class="str">'Thank you for your valuable feedback!'</span>);
+    }
+  };
+
+  <span class="kw">return</span> (
+    &lt;&gt;
+      &lt;<span class="tag">nav</span>&gt;&lt;<span class="tag">h1</span>&gt;Tell Us What You Think&lt;/<span class="tag">h1</span>&gt;&lt;/<span class="tag">nav</span>&gt;
+      &lt;<span class="tag">form</span> <span class="attr">onSubmit</span>={handleSubmit} <span class="attr">className</span>=<span class="str">"feedback-form"</span>&gt;
+        &lt;<span class="tag">h2</span>&gt;We'd Love to Hear From You!&lt;/<span class="tag">h2</span>&gt;
+        &lt;<span class="tag">p</span>&gt;Please share your feedback with us.&lt;/<span class="tag">p</span>&gt;
+        &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="attr">name</span>=<span class="str">"name"</span> <span class="attr">placeholder</span>=<span class="str">"Your Name"</span>
+          <span class="attr">value</span>={formData.name} <span class="attr">onChange</span>={handleChange} /&gt;
+        &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">"email"</span> <span class="attr">name</span>=<span class="str">"email"</span> <span class="attr">placeholder</span>=<span class="str">"Your Email"</span>
+          <span class="attr">value</span>={formData.email} <span class="attr">onChange</span>={handleChange} /&gt;
+        &lt;<span class="tag">textarea</span> <span class="attr">name</span>=<span class="str">"feedback"</span> <span class="attr">placeholder</span>=<span class="str">"Your Feedback"</span>
+          <span class="attr">value</span>={formData.feedback} <span class="attr">onChange</span>={handleChange}&gt;&lt;/<span class="tag">textarea</span>&gt;
+        &lt;<span class="tag">button</span> <span class="attr">type</span>=<span class="str">"submit"</span>&gt;Submit Feedback&lt;/<span class="tag">button</span>&gt;
+      &lt;/<span class="tag">form</span>&gt;
+    &lt;/&gt;
+  );
+};
+
+<span class="kw">export default</span> FeedbackForm;</code></pre>
+      </div>
+    </details>
+  </section>
+
+  <!-- Practice -->
+  <section id="practice">
+    <h2><span class="step-badge">★</span> Practice Exercise</h2>
+    <p>Extend the form with a 1–5 star rating system using radio buttons.</p>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <p>Add a <code>rating</code> field to the <code>formData</code> state, initialized as an empty string:</p>
+          <div class="code-block">
+            <div class="code-label">jsx <button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><code><span class="kw">const</span> [formData, setFormData] = <span class="fn">useState</span>({
+  name: <span class="str">''</span>,
+  email: <span class="str">''</span>,
+  feedback: <span class="str">''</span>,
+  rating: <span class="str">''</span>   <span class="cm">// add this</span>
+});</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <p>Add five radio buttons inside the form (values 1–5), each using the same <code>handleChange</code> handler:</p>
+          <div class="code-block">
+            <div class="code-label">jsx <button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><code>&lt;<span class="tag">p</span>&gt;Rate Us:&lt;/<span class="tag">p</span>&gt;
+{[1, 2, 3, 4, 5].<span class="fn">map</span>((val) => (
+  &lt;<span class="tag">label</span> <span class="attr">key</span>={val}&gt;
+    &lt;<span class="tag">input</span>
+      <span class="attr">type</span>=<span class="str">"radio"</span>
+      <span class="attr">name</span>=<span class="str">"rating"</span>
+      <span class="attr">value</span>={val}
+      <span class="attr">onChange</span>={handleChange}
+    /&gt;
+    {val}
+  &lt;/<span class="tag">label</span>&gt;
+))}</code></pre>
+          </div>
+          <div class="callout callout-tip">
+            <div class="callout-icon"></div>
+            <p>The <code>handleChange</code> function requires <strong>no changes</strong> — the spread operator already handles the new <code>rating</code> field automatically.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <p>Update <code>handleSubmit</code> to include the rating in the confirmation message:</p>
+          <div class="code-block">
+            <div class="code-label">jsx <button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><code><span class="kw">const</span> rating = formData.rating;
+<span class="kw">const</span> confirmationMessage = <span class="str">`
+Name: ${formData.name}
+Email: ${formData.email}
+Feedback: ${formData.feedback}
+Rating: ${rating}
+`</span>;</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <p>Also reset <code>rating</code> in <code>setFormData</code> when clearing the form after submission:</p>
+          <div class="code-block">
+            <div class="code-label">jsx <button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+            <pre><code><span class="fn">setFormData</span>({ name: <span class="str">''</span>, email: <span class="str">''</span>, feedback: <span class="str">''</span>, rating: <span class="str">''</span> });</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <p>Re-run the app and submit the form. The confirm dialog now shows the rating alongside name, email, and feedback.</p>
+        </div>
+      </div>
+    </div>
+
+    <details>
+      <summary>Full solution — FeedbackForm.jsx with Rating</summary>
+      <div class="code-block">
+        <pre><code><span class="kw">import</span> React, { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> <span class="str">'./FeedbackForm.css'</span>;
+
+<span class="kw">const</span> <span class="fn">FeedbackForm</span> = () => {
+  <span class="kw">const</span> [formData, setFormData] = <span class="fn">useState</span>({
+    name: <span class="str">''</span>, email: <span class="str">''</span>, feedback: <span class="str">''</span>, rating: <span class="str">''</span>
+  });
+
+  <span class="kw">const</span> <span class="fn">handleChange</span> = (event) => {
+    <span class="kw">const</span> { name, value } = event.target;
+    <span class="fn">setFormData</span>({ ...formData, [name]: value });
+  };
+
+  <span class="kw">const</span> <span class="fn">handleSubmit</span> = (event) => {
+    event.<span class="fn">preventDefault</span>();
+    <span class="kw">const</span> rating = formData.rating;
+    <span class="kw">const</span> confirmationMessage = <span class="str">`
+    Name: ${formData.name}
+    Email: ${formData.email}
+    Feedback: ${formData.feedback}
+    Rating: ${rating}
+    `</span>;
+    <span class="kw">const</span> isConfirmed = window.<span class="fn">confirm</span>(
+      <span class="str">`Please confirm your details:\n\n${confirmationMessage}`</span>
+    );
+    <span class="kw">if</span> (isConfirmed) {
+      console.<span class="fn">log</span>(<span class="str">'Submitting feedback:'</span>, formData);
+      <span class="fn">setFormData</span>({ name: <span class="str">''</span>, email: <span class="str">''</span>, feedback: <span class="str">''</span>, rating: <span class="str">''</span> });
+      <span class="fn">alert</span>(<span class="str">'Thank you for your valuable feedback!'</span>);
+    }
+  };
+
+  <span class="kw">return</span> (
+    &lt;&gt;
+      &lt;<span class="tag">nav</span>&gt;&lt;<span class="tag">h1</span>&gt;Tell Us What You Think&lt;/<span class="tag">h1</span>&gt;&lt;/<span class="tag">nav</span>&gt;
+      &lt;<span class="tag">form</span> <span class="attr">onSubmit</span>={handleSubmit} <span class="attr">className</span>=<span class="str">"feedback-form"</span>&gt;
+        &lt;<span class="tag">h2</span>&gt;We'd Love to Hear From You!&lt;/<span class="tag">h2</span>&gt;
+        &lt;<span class="tag">p</span>&gt;Please share your feedback with us.&lt;/<span class="tag">p</span>&gt;
+        &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="attr">name</span>=<span class="str">"name"</span> <span class="attr">placeholder</span>=<span class="str">"Your Name"</span>
+          <span class="attr">value</span>={formData.name} <span class="attr">onChange</span>={handleChange} /&gt;
+        &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">"email"</span> <span class="attr">name</span>=<span class="str">"email"</span> <span class="attr">placeholder</span>=<span class="str">"Your Email"</span>
+          <span class="attr">value</span>={formData.email} <span class="attr">onChange</span>={handleChange} /&gt;
+        &lt;<span class="tag">textarea</span> <span class="attr">name</span>=<span class="str">"feedback"</span> <span class="attr">placeholder</span>=<span class="str">"Your Feedback"</span>
+          <span class="attr">value</span>={formData.feedback} <span class="attr">onChange</span>={handleChange}&gt;&lt;/<span class="tag">textarea</span>&gt;
+        &lt;<span class="tag">p</span>&gt;Rate Us:&lt;/<span class="tag">p</span>&gt;
+        {[1, 2, 3, 4, 5].<span class="fn">map</span>((val) => (
+          &lt;<span class="tag">label</span> <span class="attr">key</span>={val}&gt;
+            &lt;<span class="tag">input</span> <span class="attr">type</span>=<span class="str">"radio"</span> <span class="attr">name</span>=<span class="str">"rating"</span> <span class="attr">value</span>={val}
+              <span class="attr">onChange</span>={handleChange} /&gt;{val}
+          &lt;/<span class="tag">label</span>&gt;
+        ))}
+        &lt;<span class="tag">button</span> <span class="attr">type</span>=<span class="str">"submit"</span>&gt;Submit Feedback&lt;/<span class="tag">button</span>&gt;
+      &lt;/<span class="tag">form</span>&gt;
+    &lt;/&gt;
+  );
+};
+
+<span class="kw">export default</span> FeedbackForm;</code></pre>
+      </div>
+    </details>
+  </section>
+
+  <!-- Conclusion -->
+  <section id="conclusion">
+    <div class="conclusion">
+      <h2>🎉 Conclusion</h2>
+      <p>In this lab you:</p>
+      <ul>
+        <li>Built a <code>FeedbackForm</code> component using <code>useState</code> to manage form data (name, email, feedback)</li>
+        <li>Created a <code>handleChange</code> function that updates state immutably using the spread operator and computed property names</li>
+        <li>Built a <code>handleSubmit</code> function with <code>window.confirm</code>, form reset, and a thank you <code>alert</code></li>
+        <li>Added <code>value</code> and <code>onChange</code> bindings to make all inputs controlled components</li>
+        <li>Extended the form with radio button inputs for a 1–5 rating in the Practice Exercise</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <span>Author: Richa Arora &nbsp;·&nbsp; © IBM Corporation. All rights reserved.</span>
+    <span class="license-tag">Apache 2.0</span>
+  </footer>
+
+</main>
+
+<script>
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 2000);
+    });
+  }
+
+  const sections = document.querySelectorAll('section[id], div[id]');
+  const navLinks = document.querySelectorAll('nav a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.parentElement.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+
+</body>
+</html>
